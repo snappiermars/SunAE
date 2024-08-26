@@ -80,25 +80,27 @@ def sunae(year, day, hour, lat, long):
 
 # Ejemplo de uso con la Ciudad de México
 year = 2024
-day = 221  # 9 de agosto (debido a la conversión de hora)
-hour = 10.0  # 12:00 AM UTC, que es 7:00 PM del 8 de agosto en Ciudad de México
+day = 220  # 8 de agosto
 lat = 19.4326  # Latitud de Ciudad de México
 long = -99.1332  # Longitud de Ciudad de México
 
-az, el = sunae(year, day, hour, lat, long)
-print(f'Azimut = {az}',f'Elevacion {el}')
+# Lista para guardar los azimuts y elevaciones
+az_list = []
+el_list = []
 
-# Graficar el resultado
+# Calcular la posición del Sol en intervalos de tiempo
+for hour in range(0, 24):
+    az, el = sunae(year, day, hour, lat, long)
+    az_list.append(math.radians(az))
+    el_list.append(90 - el)  # Convertir elevación para gráfico polar
+
+# Graficar la trayectoria
 fig = plt.figure()
 ax = fig.add_subplot(111, polar=True)
 ax.set_theta_direction(-1)  # Direccion del azimut
 ax.set_theta_offset(math.pi / 2.0)  # 0 grados apunta al norte
 
-# Convertir ángulo a radianes para graficar en coordenadas polares
-az_rad = math.radians(az)
-el_rad = 90 - el  # Elevar el ángulo (para que 90° sea en el horizonte)
-
-ax.scatter(az_rad, el_rad, c='orange', s=100, label='Sol')
+ax.plot(az_list, el_list, marker='o', label='Trayectoria del Sol')
 
 # Configuración de la gráfica
 ax.set_ylim(0, 90)
@@ -106,7 +108,7 @@ ax.set_yticks(range(0, 91, 10))
 ax.set_yticklabels(['90°', '80°', '70°', '60°', '50°', '40°', '30°', '20°', '10°', 'Horizonte'])
 ax.set_xticks([0, math.pi/2, math.pi, 3*math.pi/2])
 ax.set_xticklabels(['N', 'E', 'S', 'W'])
-ax.set_title(f'Posición del Sol: Azimut = {az:.2f}°, Elevación = {el:.2f}°')
+ax.set_title('Trayectoria del Sol en Ciudad de México - 8 de Agosto 2024')
 
 plt.legend()
 plt.show()
