@@ -1,11 +1,31 @@
 import math
-import matplotlib.pyplot as plt
+import RPi.GPIO as GPIO
+import time
+import datetime
+import tkinter as tk
 
-# Función sunae para calcular azimut y elevación
+# Configuración de GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+# Configuración de los pines de los servos
+SERVO1_PIN = 17  # Pin del servo 1
+SERVO2_PIN = 27  # Pin del servo 2
+
+GPIO.setup(SERVO1_PIN, GPIO.OUT)
+GPIO.setup(SERVO2_PIN, GPIO.OUT)
+
+# Configuración de los servos
+pwm1 = GPIO.PWM(SERVO1_PIN, 50)  # Frecuencia de 50Hz
+pwm2 = GPIO.PWM(SERVO2_PIN, 50)  # Frecuencia de 50Hz
+pwm1.start(0)  # Inicializar en 0% de ciclo de trabajo
+pwm2.start(0)  # Inicializar en 0% de ciclo de trabajo
+
+# Función para calcular la posición del Sol
 def sunae(year, day, hour, lat, long):
     pi = math.pi
     twopi = 2 * pi
-    rad = pi / 180  # Conversión de grados a radianes
+    rad = pi / 180
 
     delta = year - 1949
     leap = math.floor(delta / 4)
@@ -78,37 +98,68 @@ def sunae(year, day, hour, lat, long):
 
     return az, el
 
-# Ejemplo de uso con la Ciudad de México
-year = 2024
-day = 220  # 8 de agosto
-lat = 19.4326  # Latitud de Ciudad de México
-long = -99.1332  # Longitud de Ciudad de México
+# Función para convertir ángulo a ciclo de trabajo del servo
+def angle_to_pwm(angle):
+    min_angle = 0  # Ángulo mínimo
+    max_angle = 180  # Ángulo máximo
+    min_pwm = 5  # Ciclo de trabajo mínimo en porcentaje
+    max_pwm = 10  # Ciclo de trabajo máximo en porcentaje
+    return min_pwm + (angle - min_angle) * (max_pwm - min_pwm) / (max_angle - min_angle)
 
-# Lista para guardar los azimuts y elevaciones
-az_list = []
-el_list = []
+# Función para actualizar la posición de los servos
+def update_servos():
+    # Obtener la fecha y hora actual
+    now = datetime.datetime.utcnow()
 
-# Calcular la posición del Sol en intervalos de tiempo
-for hour in range(0, 24):
-    az, el = sunae(year, day, hour, lat, long)
-    az_list.append(math.radians(az))
-    el_list.append(90 - el)  # Convertir elevación para gráfico polar
+    # Convertir la fecha actual a formato necesario
+    year = now.year
+    day_of_year = now.timetuple().tm_yday
+    hour = now.hour + now.minute / 60 + now.second / 3600  # Hora en UTC decimal
 
-# Graficar la trayectoria
-fig = plt.figure()
-ax = fig.add_subplot(111, polar=True)
-ax.set_theta_direction(-1)  # Direccion del azimut
-ax.set_theta_offset(math.pi / 2.0)  # 0 grados apunta al norte
+    # Latitud y longitud de Ciudad de México
+    lat = 19.4326  # Latitud de Ciudad de México
+    long = -99.1332  # Longitud de Ciudad de México
 
-ax.plot(az_list, el_list, marker='o', label='Trayectoria del Sol')
+    # Calcular la posición actual del Sol
+    az, el = sunae(year, day_of_year, hour, lat, long)
 
-# Configuración de la gráfica
-ax.set_ylim(0, 90)
-ax.set_yticks(range(0, 91, 10))
-ax.set_yticklabels(['90°', '80°', '70°', '60°', '50°', '40°', '30°', '20°', '10°', 'Horizonte'])
-ax.set_xticks([0, math.pi/2, math.pi, 3*math.pi/2])
-ax.set_xticklabels(['N', 'E', 'S', 'W'])
-ax.set_title('Trayectoria del Sol en Ciudad de México - 8 de Agosto 2024')
+    # Convertir ángulos para servos
+    servo1_angle = (el + 90) % 180
+    servo2_angle = az * 180 / math.pi
 
-plt.legend()
-plt.show()
+    # Convertir ángulos a ciclos de trabajo del servo
+    servo1_pwm = angle_to_pwm(servo1_angle)
+    servo2_pwm = angle_to_pwm(servo2_angle)
+
+    # Aplicar ciclo de trabajo a los servos
+    pwm1.ChangeDutyCycle(servo1_pwm)
+    pwm2.ChangeDutyCycle(servo2_pwm)
+
+    # Actualizar etiquetas en la GUI
+    az_label.config(text=f"Azimut: {az * 180 / math.pi:.2f}°")
+    el_label.config(text=f"Elevación: {el:.2f}°")
+    
+    # Programar la próxima actualización
+    root.after(60000, update_servos)  # Actualizar cada minuto
+
+# Configurar la interfaz gráfica
+root = tk.Tk()
+root.title("Control de Servomotores con la Posición del Sol")
+
+# Etiquetas para mostrar la posición del Sol
+az_label = tk.Label(root, text="Azimut: 0.00°", font=("Helvetica", 16))
+az_label.pack(pady=10)
+
+el_label = tk.Label(root, text="Elevación: 0.00°", font=("Helvetica", 16))
+el_label.pack(pady=10)
+
+# Iniciar la actualización de servos
+update_servos()
+
+# Ejecutar la GUI
+root.mainloop()
+
+# Limpiar GPIO al cerrar la aplicación
+pwm1.stop()
+pwm2.stop()
+GPIO.cleanup()
