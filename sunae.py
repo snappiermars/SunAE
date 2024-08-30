@@ -4,22 +4,54 @@ import time
 import datetime
 import tkinter as tk
 
-# Configuración de GPIO
+# Configuración de pines GPIO
 GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+servo_azimuth_pin = 17  # GPIO 17 para servo de azimut
+servo_elevation_pin = 18  # GPIO 18 para servo de elevación 
 
-# Configuración de los pines de los servos
-SERVO1_PIN = 17  # Pin del servo 1
-SERVO2_PIN = 27  # Pin del servo 2
+GPIO.setup(servo_azimuth_pin, GPIO.OUT)
+GPIO.setup(servo_elevation_pin, GPIO.OUT)
 
-GPIO.setup(SERVO1_PIN, GPIO.OUT)
-GPIO.setup(SERVO2_PIN, GPIO.OUT)
+# Configuración de PWM en los pines a 50Hz
+pwm1 = GPIO.PWM(servo_azimuth_pin, 50)  # PWM a 50Hz para el servo de azimut
+pwm2 = GPIO.PWM(servo_elevation_pin, 50)  # PWM a 50Hz para el servo de elevación
 
-# Configuración de los servos
-pwm1 = GPIO.PWM(SERVO1_PIN, 50)  # Frecuencia de 50Hz
-pwm2 = GPIO.PWM(SERVO2_PIN, 50)  # Frecuencia de 50Hz
-pwm1.start(0)  # Inicializar en 0% de ciclo de trabajo
-pwm2.start(0)  # Inicializar en 0% de ciclo de trabajo
+pwm1.start(0)  # Iniciar PWM con Duty Cycle 0
+pwm2.start(0)  # Iniciar PWM con Duty Cycle 0
+
+# Función para calcular el Duty Cycle basado en el ángulo (0° a 180°)
+def angle_to_duty_cycle(angle):
+    # Mapeo del ángulo a Duty Cycle (2.5% a 12.5% para 0° a 180°)
+    return 2.5 + (angle / 180.0) * 10.0
+
+# Función para convertir ángulo a ciclo de trabajo del servo
+def angle_to_pwm(angle):
+    min_angle = 0  # Ángulo mínimo
+    max_angle = 180  # Ángulo máximo
+    min_pwm = 5  # Ciclo de trabajo mínimo en porcentaje
+    max_pwm = 10  # Ciclo de trabajo máximo en porcentaje
+    return min_pwm + (angle - min_angle) * (max_pwm - min_pwm) / (max_angle - min_angle)
+
+# Mover servos a una posición específica
+def move_servos(azimuth, elevation):
+    # Calcular Duty Cycle para cada ángulo
+    servo1_pwm = angle_to_duty_cycle(azimuth)
+    servo2_pwm = angle_to_duty_cycle(elevation)
+
+    # Verificar que los valores de PWM estén en el rango permitido (0.0 a 100.0)
+    servo1_pwm = max(0, min(servo1_pwm, 100))
+    servo2_pwm = max(0, min(servo2_pwm, 100))
+
+    # Cambiar Duty Cycle para mover los servos
+    pwm1.ChangeDutyCycle(servo1_pwm)
+    pwm2.ChangeDutyCycle(servo2_pwm)
+
+    # Agregar un pequeño retardo para dar tiempo al servo a moverse
+    time.sleep(0.5)
+
+    # Detener el PWM después de mover para evitar jitter
+    pwm1.ChangeDutyCycle(0)
+    pwm2.ChangeDutyCycle(0)
 
 # Función para calcular la posición del Sol
 def sunae(year, day, hour, lat, long):
@@ -98,14 +130,6 @@ def sunae(year, day, hour, lat, long):
 
     return az, el
 
-# Función para convertir ángulo a ciclo de trabajo del servo
-def angle_to_pwm(angle):
-    min_angle = 0  # Ángulo mínimo
-    max_angle = 180  # Ángulo máximo
-    min_pwm = 5  # Ciclo de trabajo mínimo en porcentaje
-    max_pwm = 10  # Ciclo de trabajo máximo en porcentaje
-    return min_pwm + (angle - min_angle) * (max_pwm - min_pwm) / (max_angle - min_angle)
-
 # Función para actualizar la posición de los servos
 def update_servos():
     # Obtener la fecha y hora actual
@@ -130,6 +154,10 @@ def update_servos():
     # Convertir ángulos a ciclos de trabajo del servo
     servo1_pwm = angle_to_pwm(servo1_angle)
     servo2_pwm = angle_to_pwm(servo2_angle)
+
+    # Verificar que los valores de PWM estén en el rango permitido (0.0 a 100.0)
+    servo1_pwm = max(0, min(servo1_pwm, 100))
+    servo2_pwm = max(0, min(servo2_pwm, 100))
 
     # Aplicar ciclo de trabajo a los servos
     pwm1.ChangeDutyCycle(servo1_pwm)
