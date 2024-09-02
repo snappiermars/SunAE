@@ -1,24 +1,25 @@
-import math #Importamos la libreria math para realizar los calculos necesarios
+import math
 
 class SolarPosition:
-    def __init__(self, year:int, day_of_year:int, hour:float, latitude:float, longitude:float): #Atributos de la clase
+    def __init__(self, year, day_of_year, latitude, longitude):
         self.year = year
         self.day_of_year = day_of_year
-        self.hour = hour
         self.latitude = latitude
         self.longitude = longitude
         self.pi = math.pi
         self.twopi = 2 * self.pi
         self.rad = self.pi / 180
-    
-    def calculate_julian_day(self): #Calcula el dia juliano para la fecha actual
+
+    def calculate_julian_day(self, hour):
+        """Calcula el día juliano para la fecha actual con la hora proporcionada."""
         delta = self.year - 1949
         leap = math.floor(delta / 4)
-        jd = 32916.5 + delta * 365 + leap + self.day_of_year + self.hour / 24
+        jd = 32916.5 + delta * 365 + leap + self.day_of_year + hour / 24
         return jd
 
-    def calculate_solar_position(self): #Calula la posicion del sol (azimut y elevacion)
-        jd = self.calculate_julian_day()
+    def calculate_solar_position(self, hour):
+        """Calcula la posición solar (azimut y elevación) basada en la fecha, hora y coordenadas."""
+        jd = self.calculate_julian_day(hour)
         time = jd - 51545.0
 
         # Cálculo de la longitud media del Sol
@@ -55,7 +56,7 @@ class SolarPosition:
         dec = math.asin(math.sin(oblqec) * math.sin(eclong))
 
         # Cálculo del tiempo sideral en Greenwich
-        gmst = 6.697375 + 0.0657098242 * time + self.hour
+        gmst = 6.697375 + 0.0657098242 * time + hour
         gmst = gmst % 24
         if gmst < 0:
             gmst += 24
@@ -96,13 +97,28 @@ class SolarPosition:
 
         return az, el
 
+    def calculate_daily_trajectory(self):
+        """Calcula la trayectoria del Sol para cada hora de un día dado."""
+        azimuths = []
+        elevations = []
+        
+        for hour in range(0, 24):
+            az, el = self.calculate_solar_position(hour)
+            azimuths.append(az)
+            elevations.append(el)
+        
+        return azimuths, elevations
+
 # Ejemplo de uso de la clase
 if __name__ == "__main__":
-    # Crear una instancia de la clase con la fecha, hora y coordenadas
-    solar_position = SolarPosition(2024, 242, 12.5, 19.4326, -99.1332)
+    # Crear una instancia de la clase con la fecha y coordenadas
+    solar_position = SolarPosition(2024, 242, 19.4326, -99.1332)
     
-    # Calcular la posición del sol
-    azimuth, elevation = solar_position.calculate_solar_position()
+    # Calcular la trayectoria del sol a lo largo del día
+    azimuths, elevations = solar_position.calculate_daily_trajectory()
 
-    print(f"Azimut: {azimuth:.2f}°")
-    print(f"Elevación: {elevation:.2f}°")
+    # Mostrar los resultados
+    print("Trayectoria del Sol durante el día:")
+    for hour, (az, el) in enumerate(zip(azimuths, elevations)):
+        print(f"Hora: {hour:02d}:00 - Azimut: {az:.2f}°, Elevación: {el:.2f}°")
+
