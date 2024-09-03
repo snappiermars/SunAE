@@ -158,3 +158,4 @@ resultado_trayectoria.pack()
 
 # Ejecutar la ventana principal
 ventana.mainloop()
+print("HOLA DESDE EL CUBICULOs")
