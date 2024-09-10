@@ -1,18 +1,25 @@
 import smbus
 import time
 
-# Inicializar I2C
+# Inicializar I2C en el bus 1
 bus = smbus.SMBus(1)  # I2C en Raspberry Pi 3 usa el bus 1
-address = 0x08  # Dirección I2C del Arduino (la misma que en Wire.begin en Arduino)
+I2C_ADDRESS= 0x08  # DirecciÃ³n I2C del Arduino (la misma que en Wire.begin en Arduino)
 
 def send_angle(angle):
-    if 0 <= angle <= 180:  # Validar que el ángulo esté dentro del rango
-        bus.write_byte(address, angle)  # Enviar el ángulo como un byte
+    if 0 <= angle <= 180:  # Validar que el Ã¡ngulo estÃ© dentro del rango
+        try:
+            bus.write_byte(I2C_ADDRESS, angle)  # Enviar el Ã¡ngulo como un byte
+            print(f"Ãngulo enviado: {angle}")
+        except OSError as e:
+            print(f"Error de comunicaciÃ³n: {e}")
     else:
-        print("Ángulo fuera de rango")
+        print("Ãngulo fuera de rango. Debe estar entre 0 y 180.")
 
 while True:
-    angle = int(input("Introduce el ángulo (0-180): "))  # Leer ángulo desde la terminal
-    send_angle(angle)
-    time.sleep(1)  # Pausa de 1 segundo entre envíos
+    try:
+        angle = int(input("Introduce el Ã¡ngulo (0-180): "))  # Leer Ã¡ngulo desde la terminal
+        send_angle(angle)
+        time.sleep(1)  # Pausa de 1 segundo entre envÃ­os
+    except ValueError:
+        print("Por favor, introduce un numero valido.")
 
