@@ -2,24 +2,32 @@ import smbus
 import time
 
 # Inicializar I2C en el bus 1
-bus = smbus.SMBus(1)  # I2C en Raspberry Pi 3 usa el bus 1
-I2C_ADDRESS= 0x08  # Dirección I2C del Arduino (la misma que en Wire.begin en Arduino)
+bus = smbus.SMBus(1)  # Si usas Raspberry Pi 3 o superior, usa el bus 1
+I2C_ADDRESS = 0x08  # Dirección I2C del Arduino (asegúrate de que es la correcta)
 
-def send_angle(angle):
-    if 0 <= angle <= 180:  # Validar que el ángulo esté dentro del rango
+def send_angles(angles):
+    if all(0 <= angle <= 180 for angle in angles):  # Validar que todos los ángulos estén en rango
         try:
-            bus.write_byte(I2C_ADDRESS, angle)  # Enviar el ángulo como un byte
-            print(f"Ángulo enviado: {angle}")
+            bus.write_i2c_block_data(I2C_ADDRESS, 0, angles)  # Enviar los 3 ángulos como un bloque
+            print(f"Ángulos enviados: {angles}")
         except OSError as e:
             print(f"Error de comunicación: {e}")
     else:
-        print("Ángulo fuera de rango. Debe estar entre 0 y 180.")
+        print("Algunos ángulos están fuera de rango. Deben estar entre 0 y 180.")
 
 while True:
     try:
-        angle = int(input("Introduce el ángulo (0-180): "))  # Leer ángulo desde la terminal
-        send_angle(angle)
+        # Pedir los ángulos de los 3 servos
+        angle1 = int(input("Introduce el ángulo del servo 1 (0-180): "))
+        angle2 = int(input("Introduce el ángulo del servo 2 (0-180): "))
+        angle3 = int(input("Introduce el ángulo del servo 3 (0-180): "))
+        
+        # Crear una lista con los tres ángulos
+        angles = [angle1, angle2, angle3]
+        
+        # Enviar los ángulos al Arduino
+        send_angles(angles)
         time.sleep(1)  # Pausa de 1 segundo entre envíos
     except ValueError:
-        print("Por favor, introduce un numero valido.")
+        print("Por favor, introduce un número válido.")
 
