@@ -1,7 +1,44 @@
 import math
 
 class SolarPosition:
+    """
+    Calcula la posición solar (azimut y elevación) en cualquier momento del día
+    para una ubicación geográfica específica. Utiliza la fecha, hora, latitud y
+    longitud para realizar cálculos astronómicos precisos.
+
+    Atributos:
+    ----------
+    year : int
+        Año del cálculo.
+    day_of_year : int
+        Día del año (número entre 1 y 365).
+    latitude : float
+        Latitud de la ubicación en grados (positiva para norte, negativa para sur).
+    longitude : float
+        Longitud de la ubicación en grados (positiva para este, negativa para oeste).
+    pi : float
+        Constante matemática π.
+    twopi : float
+        Constante matemática 2π.
+    rad : float
+        Factor de conversión de grados a radianes.
+    """
+    
     def __init__(self, year, day_of_year, latitude, longitude):
+        """
+        Inicializa la clase con el año, día del año, latitud y longitud.
+
+        Parámetros:
+        -----------
+        year : int
+            Año del cálculo.
+        day_of_year : int
+            Día del año (número entre 1 y 365).
+        latitude : float
+            Latitud de la ubicación en grados.
+        longitude : float
+            Longitud de la ubicación en grados.
+        """
         self.year = year
         self.day_of_year = day_of_year
         self.latitude = latitude
@@ -11,14 +48,40 @@ class SolarPosition:
         self.rad = self.pi / 180
 
     def calculate_julian_day(self, hour):
-        """Calcula el día juliano para la fecha actual con la hora proporcionada."""
+        """
+        Calcula el día juliano para la fecha actual con la hora proporcionada.
+
+        Parámetros:
+        -----------
+        hour : float
+            Hora del día en formato de 24 horas (0-23).
+
+        Retorna:
+        --------
+        float
+            El día juliano correspondiente.
+        """
         delta = self.year - 1949
         leap = math.floor(delta / 4)
         jd = 32916.5 + delta * 365 + leap + self.day_of_year + hour / 24
         return jd
 
     def calculate_solar_position(self, hour):
-        """Calcula la posición solar (azimut y elevación) basada en la fecha, hora y coordenadas."""
+        """
+        Calcula la posición solar (azimut y elevación) basada en la fecha, hora
+        y coordenadas.
+
+        Parámetros:
+        -----------
+        hour : float
+            Hora del día en formato de 24 horas (0-23).
+
+        Retorna:
+        --------
+        tuple
+            - az (float): Azimut del Sol en grados (0-360).
+            - el (float): Elevación del Sol en grados.
+        """
         jd = self.calculate_julian_day(hour)
         time = jd - 51545.0
 
@@ -98,7 +161,15 @@ class SolarPosition:
         return az, el
 
     def calculate_daily_trajectory(self):
-        """Calcula la trayectoria del Sol para cada hora de un día dado."""
+        """
+        Calcula la trayectoria del Sol para cada hora de un día dado.
+
+        Retorna:
+        --------
+        tuple
+            - azimuths (list of floats): Lista de azimuts del Sol para cada hora.
+            - elevations (list of floats): Lista de elevaciones del Sol para cada hora.
+        """
         azimuths = []
         elevations = []
         
@@ -121,4 +192,3 @@ if __name__ == "__main__":
     print("Trayectoria del Sol durante el día:")
     for hour, (az, el) in enumerate(zip(azimuths, elevations)):
         print(f"Hora: {hour:02d}:00 - Azimut: {az:.2f}°, Elevación: {el:.2f}°")
-
