@@ -27,7 +27,8 @@ while True:
         
         # Enviar los ángulos al Arduino
         send_angles(angles)
-        time.sleep(1)  # Pausa de 1 segundo entre envíos
+        # Pausa de 2 segundo entre envíos
+        time.sleep(2)  
     except ValueError:
         print("Por favor, introduce un número válido.")
 
