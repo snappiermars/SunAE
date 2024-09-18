@@ -5,7 +5,8 @@ import time
 bus = smbus.SMBus(1)  # Si usas Raspberry Pi 3 o superior, usa el bus 1
 I2C_ADDRESS = 0x08  # Dirección I2C del Arduino (asegúrate de que es la correcta)
 
-        def send_angles(angles):
+
+def send_angles(angles):
     if all(0 <= angle <= 180 for angle in angles):
         try:
             bus.write_i2c_block_data(I2C_ADDRESS, 0, angles)
@@ -22,6 +23,7 @@ I2C_ADDRESS = 0x08  # Dirección I2C del Arduino (asegúrate de que es la correc
             print(f"Error de comunicación: {e}")
     else:
         print("Algunos ángulos están fuera de rango. Deben estar entre 0 y 180.")
+
 
 while True:
     try:
