@@ -1,0 +1,91 @@
+# Documentación del Programa
+
+## Descripción General
+
+Este programa está diseñado para obtener, descomprimir y procesar datos meteorológicos desde una API. Los datos se reciben en formato JSON comprimido con GZIP y se analizan para proporcionar información sobre estados y municipios específicos en México.
+
+## Clases y Métodos
+
+### Clase `Respuesta`
+
+#### Constructor `__init__(self, data)`
+Inicializa una instancia de la clase `Respuesta` a partir de un diccionario `data`.
+
+- **Parámetros**:
+  - `data`: Un diccionario que contiene los datos meteorológicos.
+
+- **Atributos**:
+  - `cc`: Código del clima.
+  - `desciel`: Descripción del cielo.
+  - `dh`: Datos horarios.
+  - `dirvienc`: Dirección del viento (componente cardinal).
+  - `dirvieng`: Dirección del viento (grados).
+  - `dloc`: Descripción del lugar.
+  - `ides`: ID del estado.
+  - `idmun`: ID del municipio.
+  - `lat`: Latitud.
+  - `lon`: Longitud.
+  - `ndia`: Número del día.
+  - `nes`: Nombre del estado.
+  - `nmun`: Nombre del municipio.
+  - `prec`: Precipitación.
+  - `probprec`: Probabilidad de precipitación.
+  - `raf`: Rachas de viento.
+  - `tmax`: Temperatura máxima.
+  - `tmin`: Temperatura mínima.
+  - `velvien`: Velocidad del viento.
+
+#### Método `__repr__(self)`
+Proporciona una representación en cadena legible de la instancia `Respuesta`.
+
+### Clase `WeatherDataProcessor`
+
+#### Constructor `__init__(self, url)`
+Inicializa una instancia de `WeatherDataProcessor` con una URL.
+
+- **Parámetros**:
+  - `url`: URL desde la que se obtendrán los datos meteorológicos.
+
+- **Atributos**:
+  - `url`: URL de los datos.
+  - `data`: Datos meteorológicos descomprimidos y cargados.
+
+#### Método `obtener_datos(self)`
+Obtiene y descomprime los datos desde la URL proporcionada.
+
+- **Excepciones**:
+  - Captura excepciones relacionadas con solicitudes HTTP y errores de descompresión JSON.
+
+#### Método `buscar_estado(self, estado_buscado)`
+Busca y muestra los municipios en un estado específico.
+
+- **Parámetros**:
+  - `estado_buscado`: Nombre del estado a buscar.
+
+#### Método `listar_estados(self)`
+Lista todos los estados disponibles en los datos.
+
+#### Método `mostrar_datos_estado_municipio(self, estado_buscado, municipio_buscado)`
+Muestra todos los datos para un estado y municipio específicos.
+
+- **Parámetros**:
+  - `estado_buscado`: Nombre del estado a buscar.
+  - `municipio_buscado`: Nombre del municipio a buscar.
+
+### Función `main()`
+
+#### Descripción
+Ejecuta el flujo principal del programa:
+
+1. Define la URL de la API y los nombres del estado y municipio a buscar.
+2. Crea una instancia de `WeatherDataProcessor`.
+3. Obtiene los datos desde la API.
+4. Llama al método `mostrar_datos_estado_municipio` para mostrar datos específicos.
+
+- **Parámetros**:
+  - `url`: URL de la API.
+  - `estado_buscado`: Estado a buscar.
+  - `municipio_buscado`: Municipio a buscar.
+
+#### Comentarios
+- Los métodos `listar_estados` y `buscar_estado` están comentados y no se ejecutan en esta versión del programa.
