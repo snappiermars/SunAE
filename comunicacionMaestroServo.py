@@ -5,7 +5,6 @@ import time
 bus = smbus.SMBus(1)  # Si usas Raspberry Pi 3 o superior, usa el bus 1
 I2C_ADDRESS = 0x08  # Dirección I2C del Arduino (asegúrate de que es la correcta)
 
-
 def send_angles(angles):
     if all(0 <= angle <= 180 for angle in angles):
         try:
