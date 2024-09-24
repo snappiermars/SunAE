@@ -51,7 +51,7 @@ class Respuesta:
         )
 
 class WeatherDataProcessor:
-    def __init__(self, url):
+    def __init__(self, url="https://smn.conagua.gob.mx/tools/GUI/webservices/index.php?method=1"):
         self.url = url
         self.data = None
     
@@ -72,7 +72,7 @@ class WeatherDataProcessor:
             print(f"Excepción Capturada: {e}")
             self.data = None
     
-    def buscar_estado(self, estado_buscado):
+    def listar_municipios(self, estado_buscado):
         """Busca y muestra los municipios para un estado específico."""
         if self.data is None:
             print("No se han obtenido datos.")
@@ -88,9 +88,10 @@ class WeatherDataProcessor:
         if municipios:
             print(f"Municipios en el estado '{estado_buscado}':")
             for municipio in municipios:
-                print(f"- {municipio}")
+                print(f"{municipio}")
         else:
             print(f"No se encontraron municipios para el estado '{estado_buscado}'.")
+        return sorted(municipios)
 
     def listar_estados(self):
         """Lista todos los estados disponibles en los datos."""
@@ -107,43 +108,49 @@ class WeatherDataProcessor:
         if estados:
             print("Estados disponibles:")
             for estado in sorted(estados):
-                print(f"- {estado}")
+                print(f"{estado}")
         else:
             print("No se encontraron estados en los datos.")
+        return sorted(estados)
     
     def mostrar_datos_estado_municipio(self, estado_buscado, municipio_buscado):
         """Muestra todos los datos para un estado y municipio específicos."""
         if self.data is None:
             print("No se han obtenido datos.")
-            return
-        
-        encontrados = False
+            return None
+    
+        datos_municipio = []  # Lista para almacenar todos los datos encontrados
         for item in self.data:
             if item.get('nes') == estado_buscado and item.get('nmun') == municipio_buscado:
-                print(f"Datos para el estado '{estado_buscado}' y municipio '{municipio_buscado}':")
-                print(f"  cc: {item.get('cc')}")
-                print(f"  desciel: {item.get('desciel')}")
-                print(f"  dh: {item.get('dh')}")
-                print(f"  dirvienc: {item.get('dirvienc')}")
-                print(f"  dirvieng: {item.get('dirvieng')}")
-                print(f"  dloc: {item.get('dloc')}")
-                print(f"  ides: {item.get('ides')}")
-                print(f"  idmun: {item.get('idmun')}")
-                print(f"  lat: {item.get('lat')}")
-                print(f"  lon: {item.get('lon')}")
-                print(f"  ndia: {item.get('ndia')}")
-                print(f"  nes: {item.get('nes')}")
-                print(f"  nmun: {item.get('nmun')}")
-                print(f"  prec: {item.get('prec')}")
-                print(f"  probprec: {item.get('probprec')}")
-                print(f"  raf: {item.get('raf')}")
-                print(f"  tmax: {item.get('tmax')}")
-                print(f"  tmin: {item.get('tmin')}")
-                print(f"  velvien: {item.get('velvien')}")
-                encontrados = True
-        
-        if not encontrados:
+                datos = {
+                    "cc": item.get('cc'),
+                    "desciel": item.get('desciel'),
+                    "dh": item.get('dh'),
+                    "dirvienc": item.get('dirvienc'),
+                    "dirvieng": item.get('dirvieng'),
+                    "dloc": item.get('dloc'),
+                    "ides": item.get('ides'),
+                    "idmun": item.get('idmun'),
+                    "lat": item.get('lat'),
+                    "lon": item.get('lon'),
+                    "ndia": item.get('ndia'),
+                    "nes": item.get('nes'),
+                    "nmun": item.get('nmun'),
+                    "prec": item.get('prec'),
+                    "probprec": item.get('probprec'),
+                    "raf": item.get('raf'),
+                    "tmax": item.get('tmax'),
+                    "tmin": item.get('tmin'),
+                    "velvien": item.get('velvien'),
+                }
+                datos_municipio.append(datos)  # Agregar el diccionario a la lista
+    
+        if not datos_municipio:
             print(f"No se encontraron datos para el estado '{estado_buscado}' y municipio '{municipio_buscado}'.")
+            return None
+
+        return datos_municipio  # Retornar la lista con los datos
+
 
 def main():
     url = "https://smn.conagua.gob.mx/tools/GUI/webservices/index.php?method=1"
@@ -153,14 +160,16 @@ def main():
     processor = WeatherDataProcessor(url)
     processor.obtener_datos()
     
-    # Listar todos los estados
+    #Listar todos los estados
     #processor.listar_estados()
     
     # Buscar municipios en el estado específico
-    #processor.buscar_estado(estado_buscado)
+    #processor.listar_municipios(estado_buscado)
     
-    # Mostrar datos para un estado y municipio específicos
-    processor.mostrar_datos_estado_municipio(estado_buscado, municipio_buscado)
+    datos = processor.mostrar_datos_estado_municipio(estado_buscado, municipio_buscado)
+    if datos:
+        for registro in datos:
+            print(registro)  # Imprimir cada registro encontrado
 
 if __name__ == "__main__":
     main()
