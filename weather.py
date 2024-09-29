@@ -3,53 +3,6 @@ import gzip
 import json
 from io import BytesIO
 
-class Respuesta:
-    def __init__(self, data):
-        self.cc = data.get('cc')
-        self.desciel = data.get('desciel')
-        self.dh = data.get('dh')
-        self.dirvienc = data.get('dirvienc')
-        self.dirvieng = data.get('dirvieng')
-        self.dloc = data.get('dloc')
-        self.ides = data.get('ides')
-        self.idmun = data.get('idmun')
-        self.lat = data.get('lat')
-        self.lon = data.get('lon')
-        self.ndia = data.get('ndia')
-        self.nes = data.get('nes')
-        self.nmun = data.get('nmun')
-        self.prec = data.get('prec')
-        self.probprec = data.get('probprec')
-        self.raf = data.get('raf')
-        self.tmax = data.get('tmax')
-        self.tmin = data.get('tmin')
-        self.velvien = data.get('velvien')
-    
-    def __repr__(self):
-        return (
-            f"Respuesta(\n"
-            f"  cc={self.cc},\n"
-            f"  desciel='{self.desciel}',\n"
-            f"  dh={self.dh},\n"
-            f"  dirvienc='{self.dirvienc}',\n"
-            f"  dirvieng='{self.dirvieng}',\n"
-            f"  dloc='{self.dloc}',\n"
-            f"  ides={self.ides},\n"
-            f"  idmun={self.idmun},\n"
-            f"  lat={self.lat},\n"
-            f"  lon={self.lon},\n"
-            f"  ndia={self.ndia},\n"
-            f"  nes='{self.nes}',\n"
-            f"  nmun='{self.nmun}',\n"
-            f"  prec={self.prec},\n"
-            f"  probprec={self.probprec},\n"
-            f"  raf={self.raf},\n"
-            f"  tmax={self.tmax},\n"
-            f"  tmin={self.tmin},\n"
-            f"  velvien={self.velvien}\n"
-            f")"
-        )
-
 class WeatherDataProcessor:
     def __init__(self, url="https://smn.conagua.gob.mx/tools/GUI/webservices/index.php?method=1"):
         self.url = url
