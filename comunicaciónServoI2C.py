@@ -29,7 +29,7 @@ if __name__ == "__main__":
     try:
         while True:
             # Solicitamos el ángulo al usuario
-            angulo_usuario = input(f"Ingresa el ángulo entre {min_angle} y {max_angle} grados (o 'q' para salir): ")
+            angulo_usuario = input(f"Ingresa el ángulo entre {min_angle} y {max_angle} grados (o 'q' para salir):")
             if angulo_usuario.lower() == 'q':
                 print("Saliendo del programa")
                 break
