@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+
+# Importamos la librería necesaria
 from adafruit_servokit import ServoKit
 import time
 
 # Inicializamos la placa PCA9685 con 16 canales
 kit = ServoKit(channels=16)
+servo=1
 
 # Configuramos el ángulo máximo y mínimo del servomotor
 min_angle = 0
-max_angle = 180
+max_angle = 0.5
 
 # Control de un servomotor en el canal 0
 servo_channel = 0
@@ -24,22 +27,13 @@ def mover_servomotor(angulo):
     print(f"Moviendo el servomotor a {angulo} grados")
     time.sleep(1)
 
-# Programa principal
+# Ejemplo de movimiento
 if __name__ == "__main__":
     try:
         while True:
-            # Solicitamos el ángulo al usuario
-            angulo_usuario = input(f"Ingresa el ángulo entre {min_angle} y {max_angle} grados (o 'q' para salir):")
-            if angulo_usuario.lower() == 'q':
-                print("Saliendo del programa")
-                break
-            else:
-                try:
-                    # Convertimos el valor ingresado a un número entero
-                    angulo = int(angulo_usuario)
-                    # Movemos el servomotor al ángulo especificado
-                    mover_servomotor(angulo)
-                except ValueError:
-                    print("Por favor, ingresa un número válido")
+            # Mover el servomotor al ángulo mínimo
+            mover_servomotor(min_angle)
+            # Mover el servomotor al ángulo máximo
+            mover_servomotor(max_angle)
     except KeyboardInterrupt:
         print("Programa detenido")
