@@ -10,7 +10,7 @@ servo=1
 
 # Configuramos el ángulo máximo y mínimo del servomotor
 min_angle = 0
-max_angle = 180
+max_angle = 10
 
 # Control de un servomotor en el canal 0
 servo_channel = 0
