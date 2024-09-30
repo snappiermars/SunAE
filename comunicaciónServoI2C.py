@@ -6,6 +6,7 @@ import time
 
 # Inicializamos la placa PCA9685 con 16 canales
 kit = ServoKit(channels=16)
+servo=1
 
 # Configuramos el ángulo máximo y mínimo del servomotor
 min_angle = 0
