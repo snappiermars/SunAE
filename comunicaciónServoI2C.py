@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Importamos la librería necesaria
 from adafruit_servokit import ServoKit
 import time
