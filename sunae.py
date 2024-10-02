@@ -2,6 +2,13 @@ import math
 from adafruit_servokit import ServoKit
 import time
 
+# Inicializamos la placa PCA9685 con 16 canales
+kit = ServoKit(channels=16)
+servo=1
+
+# Control de un servomotor en el canal 0
+servo_channel = 0
+
 class SolarPosition:
     """
     Calcula la posición solar (azimut y elevación) en cualquier momento del día
@@ -197,4 +204,13 @@ if __name__ == "__main__":
      
     for a in azimuths:
         print (a)
+    try:
+        while True:
+            # Mover el servomotor al ángulo mínimo
+            mover_servomotor(azimuths)
+            # Mover el servomotor al ángulo máximo
+            #mover_servomotor(azimuths)
+    except KeyboardInterrupt:
+        print("Programa detenido")
 
+    
