@@ -224,7 +224,7 @@ if __name__ == "__main__":
             mover_servomotor(a)
             # Mover el servomotor al ángulo máximo
             #mover_servomotor(a[5])
-            except KeyboardInterrupt:
-            print("Programa detenido")
+   except KeyboardInterrupt:
+       print("Programa detenido")
 
     
