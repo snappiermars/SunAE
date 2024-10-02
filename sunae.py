@@ -219,7 +219,7 @@ if __name__ == "__main__":
     try:
         while True:
             # Mover el servomotor al ángulo mínimo
-            mover_servomotor(azimuths)
+            mover_servomotor(a)
             # Mover el servomotor al ángulo máximo
             #mover_servomotor(azimuths)
     except KeyboardInterrupt:
