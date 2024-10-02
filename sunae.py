@@ -194,12 +194,7 @@ if __name__ == "__main__":
     print("Trayectoria del Sol durante el día:")
     for hour, (az, el) in enumerate(zip(azimuths, elevations)):
         print(f"Hora: {hour:02d}:00 - Azimut: {az:.2f}°, Elevación: {el:.2f}°")
+     
+    for a in azimuths:
+        print (a)
 
-    
-
-    # Mover el servomotor al ángulo mínimo
-    mover_servomotor(azimuths[0:5])
-    # Mover el servomotor al ángulo máximo
-    #mover_servomotor(azimuths[5])
-    except KeyboardInterrupt:
-    print("Programa detenido")
