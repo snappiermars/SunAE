@@ -5,6 +5,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from adafruit_servokit import ServoKit
+import time
 
 # Variables globales para la actualización
 actualizando_posicion = False
