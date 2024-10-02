@@ -195,8 +195,6 @@ if __name__ == "__main__":
     for hour, (az, el) in enumerate(zip(azimuths, elevations)):
         print(f"Hora: {hour:02d}:00 - Azimut: {az:.2f}°, Elevación: {el:.2f}°")
 
-        try:
-        while True:
             # Mover el servomotor al ángulo mínimo
             mover_servomotor(azimuths)
             # Mover el servomotor al ángulo máximo
