@@ -189,6 +189,18 @@ class SolarPosition:
         
         return azimuths, elevations
 
+def mover_servomotor(angulo):
+    # Limitamos el ángulo al rango permitido
+    if angulo < 0:
+        angulo = 0
+    elif angulo > 180:
+        angulo = 180
+
+    # Movemos el servomotor al ángulo especificado
+    kit.servo[servo_channel].angle = angulo
+    print(f"Moviendo el servomotor a {angulo} grados")
+    time.sleep(1)
+
 # Ejemplo de uso de la clase
 if __name__ == "__main__":
     # Crear una instancia de la clase con la fecha y coordenadas
