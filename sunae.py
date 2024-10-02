@@ -216,10 +216,11 @@ if __name__ == "__main__":
      
     for a in azimuths:
         print (a)
+        time.sleep(2)
     try:
         while True:
             # Mover el servomotor al ángulo mínimo
-            mover_servomotor(a[:3])
+            mover_servomotor(a)
             # Mover el servomotor al ángulo máximo
             #mover_servomotor(a[5])
     except KeyboardInterrupt:
