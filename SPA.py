@@ -51,7 +51,7 @@ def spa(year, month, day, hour, minute, second, timezone, latitude, longitude, e
 
     return {
         'Julian Day': jd,
-        'Sun's Declination': delta,
+        "Sun's Declination": delta,
         'Right Ascension': alpha,
         'Sunrise (UTC)': sunrise_time * 24,
         'Sunset (UTC)': sunset_time * 24,

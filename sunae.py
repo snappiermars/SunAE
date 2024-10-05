@@ -4,10 +4,13 @@ import time
 
 # Inicializamos la placa PCA9685 con 16 canales
 kit = ServoKit(channels=16)
-servo=1
+servo=4
 
 # Control de un servomotor en el canal 0
-servo_channel = 0
+servo_az = 0
+servo_el = 1
+servo_1 = 15
+servo_2 = 14
 
 class SolarPosition:
     """
@@ -189,7 +192,7 @@ class SolarPosition:
         
         return azimuths, elevations
 
-def mover_servomotor(angulo):
+def mover_servomotor(servo, angulo):
     # Limitamos el ángulo al rango permitido
     if angulo < 0:
         angulo = 0
@@ -197,8 +200,8 @@ def mover_servomotor(angulo):
         angulo = 180
 
     # Movemos el servomotor al ángulo especificado
-    kit.servo[servo_channel].angle = angulo
-    print(f"Moviendo el servomotor a {angulo} grados")
+    kit.servo[servo].angle = angulo
+    print(f"Moviendo el servomotor {servo} a {angulo} grados")
     time.sleep(1)
 
 # Ejemplo de uso de la clase
@@ -213,15 +216,15 @@ if __name__ == "__main__":
     print("Trayectoria del Sol durante el día:")
     for hour, (az, el) in enumerate(zip(azimuths, elevations)):
         print(f"Hora: {hour:02d}:00 - Azimut: {az:.2f}°, Elevación: {el:.2f}°")
+        mover_servomotor(servo_az,az)
+        time.sleep(1)
+        mover_servomotor(servo_el,el)
+        time.sleep(1)
+        mover_servomotor(servo_1,az)
+        time.sleep(1)
+        mover_servomotor(servo_2,el)
+        time.sleep(1)
      
     for a in azimuths:
-        print (a)
+        mover_servomotor(servo_az,a)
         time.sleep(1)
-    try:
-        while True:
-            # Mover el servomotor al ángulo mínimo
-            mover_servomotor(a)
-            # Mover el servomotor al ángulo máximo
-            #mover_servomotor(azimuths)
-    except KeyboardInterrupt:
-        print("Programa detenido")
