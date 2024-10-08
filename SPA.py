@@ -56,9 +56,9 @@ class SolarCalculator:
             'Solar Noon (UTC)': solar_noon * 24
         }
 
-    def calculate_day_trajectory(self, date):
+    def calculate_day_trajectory(self, date=datetime.now(), interval=30):
         """Calcula la trayectoria solar completa para un día específico (en intervalos de 10 minutos)."""
-        time_interval = timedelta(minutes=10)  # Intervalo de 10 minutos
+        time_interval = timedelta(minutes=interval)  # Intervalo de 10 minutos
         times = []
         solar_positions = []
 
@@ -80,6 +80,15 @@ class SolarCalculator:
             dt += time_interval
 
         return solar_positions
+    def declination_ascension(self,date=datetime.now(), interval=30):
+        daily_info = self.calculate_day_trajectory(date,interval)
+        declination = []
+        ascension = []
+        for point in daily_info:
+            declination.append(point['declination'])
+            ascension.append(point['right_ascension'])
+        return declination,ascension
+
 if __name__ == "__main__":
     # Parámetros de la Ciudad de México
     latitude = 19.4326  # Latitud de Ciudad de México
@@ -94,9 +103,12 @@ if __name__ == "__main__":
     date = datetime(2024, 10, 6)  # 6 de octubre de 2024
 
     # Calcular la trayectoria solar para todo el día, en intervalos de 10 minutos
-    trajectory = solar_calculator.calculate_day_trajectory(date)
-
-    # Imprimir resultados
+    trajectory = solar_calculator.calculate_day_trajectory(date,30)
+    dec, asc = solar_calculator.declination_ascension()
+    for d, a in zip(dec,asc):
+        print(f'Declinacion: {d} | Ascension: {a}')
+    # Imprimir 
+    """
     for point in trajectory:
         print(f"Hora: {point['time'].strftime('%Y-%m-%d %H:%M:%S')}, "
             f"Declinación: {point['declination']:.2f}°, "
@@ -104,4 +116,4 @@ if __name__ == "__main__":
             f"Amanecer (UTC): {point['sunrise']:.2f}, "
             f"Atardecer (UTC): {point['sunset']:.2f}, "
             f"Mediodía Solar (UTC): {point['solar_noon']:.2f}")
-
+    """
