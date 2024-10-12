@@ -3,14 +3,17 @@ from adafruit_servokit import ServoKit
 import time
 
 # Inicializamos la placa PCA9685 con 16 canales
-kit = ServoKit(channels=16)
-servo=4
+
+kit1 = ServoKit(channels=16, address=0x40)
+kit2 = ServoKit(channels=16, address=0x41)
 
 # Control de un servomotor en el canal 0
+
 servo_az = 0
 servo_el = 1
 servo_1 = 15
 servo_2 = 14
+servo_30 = 13
 
 class SolarPosition:
     """
@@ -192,7 +195,7 @@ class SolarPosition:
         
         return azimuths, elevations
 
-def mover_servomotor(servo, angulo):
+def mover_servomotor(kit, servo, angulo):
     # Limitamos el ángulo al rango permitido
     if angulo < 0:
         angulo = 0
@@ -216,13 +219,15 @@ if __name__ == "__main__":
     print("Trayectoria del Sol durante el día:")
     for hour, (az, el) in enumerate(zip(azimuths, elevations)):
         print(f"Hora: {hour:02d}:00 - Azimut: {az:.2f}°, Elevación: {el:.2f}°")
-        mover_servomotor(servo_az,az)
+        mover_servomotor(kit1, servo_az,az)
         time.sleep(1)
-        mover_servomotor(servo_el,el)
+        mover_servomotor(kit1, servo_el,el)
         time.sleep(1)
-        mover_servomotor(servo_1,az)
+        mover_servomotor(kit1, servo_1,az)
         time.sleep(1)
-        mover_servomotor(servo_2,el)
+        mover_servomotor(kit1, servo_2,el)
+        time.sleep(1)
+        mover_servomotor(kit2, servo_30,az)
         time.sleep(1)
      
     for a in azimuths:
